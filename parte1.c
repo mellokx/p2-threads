@@ -29,7 +29,7 @@ void sincronizacion_con_barrier(int N,int M){
     pthread_barrier_init (&barrera, NULL, N + 1);
     /* Arreglo de estructuras que almacenan los parametros de cada hebra */
     struct parametros * p = (struct parametros *)malloc(N*sizeof(struct parametros));
-    /* Creacion de las hebras que trabajan de forma colaborativa*/
+    /* Creacion de las hebras que trabajan de forma colaborativa */
     int aux = 0;
     for(int i = 0; i<N; ++i){
         p[i].num_hebra = i + 1;
@@ -39,9 +39,11 @@ void sincronizacion_con_barrier(int N,int M){
             p[i].tareas_por_etapa[j] = aux;
             aux++;
         }
+        /* Crea e inicia tareas de las hebras*/
         pthread_create (&vec_hebras[i], NULL, hebra, (void *) &p[i]);
         printf("%d\n",vec_hebras[i]);
     }
+    /* Etapas de ejecución */
     for(int i = 0; i<M; ++i){
         printf("--------------------\n",i+1);
         printf("Etapa %d iniciada...\n",i+1);
@@ -49,10 +51,12 @@ void sincronizacion_con_barrier(int N,int M){
         printf("Etapa %d terminada.\n",i+1);
     }
     printf("Se han completado exitosamente todas las etapas\n");
+    /* Libera memoria de los parametros ocupados por cada hebra */
     free(p);
     for(int i = 0; i<N; ++i){
         free(p[i].tareas_por_etapa);
     }
+    pthread_barrier_destroy(&barrera);
 }
 
 int main(){
