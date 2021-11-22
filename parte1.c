@@ -16,7 +16,7 @@ void * hebra(void * arg){
     struct parametros * p = (struct parametros *) arg;
     int r = 0;
     for(int i = 0; i<p->M; ++i){
-        r = rand()%11 + 1;
+        r = rand()%12 + 1;
         sleep(r);
         printf("    Tarea #%d terminada por hebra %d en %d segundos\n",p->tareas_por_etapa[i],p->num_hebra,r);
         pthread_barrier_wait (&barrera);
@@ -30,14 +30,15 @@ void sincronizacion_con_barrier(int N,int M){
     /* Arreglo de estructuras que almacenan los parametros de cada hebra */
     struct parametros * p = (struct parametros *)malloc(N*sizeof(struct parametros));
     /* Creacion de las hebras que trabajan de forma colaborativa */
-    int aux = 0;
+    int aux;
     for(int i = 0; i<N; ++i){
         p[i].num_hebra = i + 1;
         p[i].M = M;
         p[i].tareas_por_etapa = (int *)malloc(M*sizeof(int));
+        aux = i+1;
         for(int j = 0; j< M; ++j){
             p[i].tareas_por_etapa[j] = aux;
-            aux++;
+            aux += N;
         }
         /* Crea e inicia tareas de las hebras*/
         pthread_create (&vec_hebras[i], NULL, hebra, (void *) &p[i]);
