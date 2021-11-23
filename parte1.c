@@ -69,19 +69,3 @@ int main(){
     sincronizacion_con_barrier(N,M);
     return 0;
 }
-/*
-for(int i = 0; i < N; ++i){
-        if(pthread_create(&hilo[i], NULL, hilo1, NULL) != 0){
-            perror("Error al crear thread!");
-        }
-    }
-    for(int i = 0; i<M; ++i){
-        printf("Etapa %d iniciada...\n",i+1);
-        for(int j = 0; j < N; ++j){
-            if(pthread_join(hilo[i], NULL) != 0){
-                perror("Error al crear thread!");
-            }
-        }
-        pthread_barrier_wait (&barrera);
-        printf("Etapa %d terminada.\n",i + 1);
-    }*/
