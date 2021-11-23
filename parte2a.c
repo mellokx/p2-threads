@@ -3,46 +3,59 @@
 #include <pthread.h>
 #include <unistd.h>
 #include <stdlib.h>
+#include <semaphore.h>
 
-pthread_mutex_t semaforo;
-pthread_mutex_t torniquete;
+#define N_HEBRAS 5
+#define M_ETAPAS 3
 static int contador = 0;
+sem_t mutex;
+sem_t torniquete;
+
 
 void * hebra(void * arg){
     int r;
-    for(int i = 0; i<3; ++i){
-        pthread_mutex_lock(&semaforo);
+    for(int i = 0; i<M_ETAPAS; ++i){
+        sem_wait(&mutex);//lock
         contador++;
-        pthread_mutex_unlock(&semaforo);
-        if(contador == 5){
-            pthread_mutex_unlock(&torniquete);
+        sem_post(&mutex);//signal/unlock
+
+        if(contador == N_HEBRAS){
+            sem_post(&torniquete);//signal
         }
-        pthread_mutex_lock(&torniquete);
-        pthread_mutex_unlock(&torniquete);
+
+        sem_wait(&torniquete);
+        sem_post(&torniquete);//signal
+
         r = rand()%12 + 1;
         sleep(r);
         printf("    Tarea terminada por hebra en %d segundos\n",r);
-        pthread_mutex_lock(&semaforo);
+        
+        sem_wait(&mutex);//lock
         contador--;
-        pthread_mutex_unlock(&semaforo);
+        sem_post(&mutex);//signal/unlock
+        
         if(contador == 0){
-            pthread_mutex_lock(&torniquete);
+            sem_wait(&torniquete);
         }
-        //pthread_barrier_wait (&barrera);
     }
 }
 
 int main(){
-    pthread_t vec_hebras[5];
-    pthread_mutex_init(&semaforo, NULL);
-    pthread_mutex_init(&torniquete, NULL);
-    for(int i = 0; i < 5; ++i){
+    pthread_t vec_hebras[N_HEBRAS];
+    sem_init(&mutex, 0, 1); // semaforo inicializado en 1
+    sem_init(&torniquete, 0, 0); // semaforo inicializado en 0
+
+    srand(time(NULL));
+    
+    for(int i = 0; i < N_HEBRAS; ++i){
         /* Crea e inicia tareas de las hebras*/
         pthread_create (&vec_hebras[i], NULL, hebra, NULL);
     }
-    for(int i = 0; i < 5; ++i){
+
+
+    for(int i = 0; i < N_HEBRAS; ++i){
         pthread_join(vec_hebras[i],NULL);
     }
-    pthread_mutex_destroy(&semaforo);
+
     return 0;
 }

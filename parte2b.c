@@ -3,55 +3,64 @@
 #include <pthread.h>
 #include <unistd.h>
 #include <stdlib.h>
+#include <semaphore.h>
 
-pthread_mutex_t semaforo;
-pthread_mutex_t torniquete1;
-pthread_mutex_t torniquete2;
+#define N_HEBRAS 5
+#define M_ETAPAS 3
 static int contador = 0;
+sem_t mutex;
+sem_t torniquete1;
+sem_t torniquete2;
+
 
 void * hebra(void * arg){
     int r;
-    for(int i = 0; i<3; ++i){
-        pthread_mutex_lock(&semaforo);
+    for(int i = 0; i<M_ETAPAS; ++i){
+        sem_wait(&mutex);//lock
         contador++;
-        if(contador == 5){
-            pthread_mutex_lock(&torniquete2);
-            pthread_mutex_unlock(&torniquete1);
+        if(contador == N_HEBRAS){
+            sem_wait(&torniquete2);
+            sem_post(&torniquete1);//signal
         }
-        pthread_mutex_unlock(&semaforo);
+        sem_post(&mutex);//signal/unlock
 
-        pthread_mutex_lock(&torniquete1);
-        pthread_mutex_unlock(&torniquete1);
+        sem_wait(&torniquete1);
+        sem_post(&torniquete1);//signal
 
         r = rand()%12 + 1;
         sleep(r);
         printf("    Tarea terminada por hebra en %d segundos\n",r);
-
-        pthread_mutex_lock(&semaforo);
+        
+        sem_wait(&mutex);//lock
         contador--;
         if(contador == 0){
-            pthread_mutex_lock(&torniquete1);
-            pthread_mutex_unlock(&torniquete2);
+            sem_wait(&torniquete1);
+            sem_post(&torniquete2);//signal
         }
-        pthread_mutex_unlock(&semaforo);
+        sem_post(&mutex);//signal/unlock
 
-        pthread_mutex_lock(&torniquete2);
-        pthread_mutex_unlock(&torniquete2);
+        sem_wait(&torniquete2);
+        sem_post(&torniquete2);//signal
     }
 }
 
 int main(){
-    pthread_t vec_hebras[5];
-    pthread_mutex_init(&semaforo, NULL);
-    pthread_mutex_init(&torniquete1, NULL);
-    pthread_mutex_init(&torniquete2, NULL);
-    for(int i = 0; i < 5; ++i){
+    pthread_t vec_hebras[N_HEBRAS];
+    sem_init(&mutex, 0, 1); // semaforo inicializado en 1
+    sem_init(&torniquete1, 0, 0); // semaforo inicializado en 0
+    sem_init(&torniquete2, 0, 1); // semaforo inicializado en 1
+
+    srand(time(NULL));
+    
+    for(int i = 0; i < N_HEBRAS; ++i){
         /* Crea e inicia tareas de las hebras*/
         pthread_create (&vec_hebras[i], NULL, hebra, NULL);
     }
-    for(int i = 0; i < 5; ++i){
+
+
+    for(int i = 0; i < N_HEBRAS; ++i){
         pthread_join(vec_hebras[i],NULL);
     }
-    pthread_mutex_destroy(&semaforo);
+
     return 0;
 }
