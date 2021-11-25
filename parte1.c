@@ -46,8 +46,6 @@ void sincronizacion_con_barrier(int N,int M){
     }
     /* Etapas de ejecución */
     for(int i = 0; i<M; ++i){
-        printf("--------------------\n",i+1);
-        printf("Etapa %d iniciada...\n",i+1);
         pthread_barrier_wait (&barrera);
         printf("Etapa %d terminada.\n",i+1);
     }
