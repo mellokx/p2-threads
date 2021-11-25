@@ -12,12 +12,12 @@ void * hebra(void * arg){
     int r = 0;
     for(int i = 0; i<p->M; ++i){
         p->m->iniciaTarea();
-        r = rand()%3+1;
+        cout<<"    Hebra "<<p->num_hebra<<" trabajando en tarea #"<<p->tareas_por_etapa[i]<<" ..."<<endl;
+        r = rand()%12+1;
         sleep(r);
-        printf("    Tarea #%d terminada por hebra %d en %d segundos\n",p->tareas_por_etapa[i],p->num_hebra,r);
+        cout<<"    Tarea #"<<p->tareas_por_etapa[i]<<" terminada por hebra "<<p->num_hebra<<" en "<<r<<" segundos"<<endl;
         p->m->terminaTarea();
     }
-    printf("hebra %d termino\n",p->num_hebra);
     return (void *)arg;
 }
 

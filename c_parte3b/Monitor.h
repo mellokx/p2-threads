@@ -19,6 +19,6 @@ class Monitor{
     public:
         Monitor(int N);
         ~Monitor();
-        void terminaTarea();
         void iniciaTarea();
+        void terminaTarea();
 };
