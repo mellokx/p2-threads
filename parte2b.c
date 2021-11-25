@@ -34,7 +34,7 @@ void * hebra(void * arg){
         sem_post(&torniquete1);//signal
 
         printf("    Hebra %d trabajando en tarea #%d ...\n",p->num_hebra,p->tareas_por_etapa[i]);
-        r = rand()%4 + 1;
+        r = rand()%13;
         sleep(r);
         printf("    Tarea #%d terminada por hebra %d en %d segundos\n",p->tareas_por_etapa[i],p->num_hebra,r);
         
