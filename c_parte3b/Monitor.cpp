@@ -2,45 +2,44 @@
 
 Monitor::Monitor(int N){
     this->N = N;
-    contador = 0;
+    hebras_listas = 0;
+    hebras_anteriores = 0;
     num_etapa = 0;
-    contador_tareas_ejec = 0;
-    contador_tareas_term = N;
-    pthread_cond_init(&barrera_entrada_c, NULL);
-    pthread_cond_init(&barrera_salida_c, NULL);
-    pthread_mutex_init(&barrera_entrada_m, NULL);
-    pthread_mutex_init(&barrera_salida_m, NULL);
-
+    pthread_cond_init(&barrera_entrada,NULL);
+    pthread_cond_init(&barrera_salida,NULL);
+    pthread_mutex_init(&lock,NULL);
 }
 
 Monitor::~Monitor(){
-    pthread_cond_destroy(&barrera_entrada_c);
-    pthread_cond_destroy(&barrera_salida_c);
-    pthread_mutex_destroy(&barrera_entrada_m);
-    pthread_mutex_destroy(&barrera_salida_m);
+    pthread_cond_destroy(&barrera_entrada);
+    pthread_cond_destroy(&barrera_salida);
+    pthread_mutex_destroy(&lock);
 }
 
-void Monitor::tareaTerminada(){
-    while(contador_tareas_term < N){
-        pthread_mutex_lock(&barrera_entrada_m);
-        pthread_cond_wait(&barrera_entrada_c,&barrera_entrada_m);
+void Monitor::iniciaTarea(){
+    pthread_mutex_lock(&lock);
+    while((hebras_anteriores < N)&&(hebras_listas == N)){
+        pthread_cond_wait(&barrera_entrada,&lock);
     }
-    contador_tareas_ejec++;
-    while(contador_tareas_ejec < N){
-        pthread_mutex_lock(&barrera_salida_m);
-        pthread_cond_wait(&barrera_salida_c,&barrera_salida_m);
+    if(hebras_anteriores == N){
+        hebras_listas = 0;
+        hebras_anteriores = 0;
     }
-    if(contador_tareas_term==N){
-        contador_tareas_term = 0;
-        num_etapa++;
+    pthread_cond_signal(&barrera_entrada);
+    pthread_mutex_unlock(&lock);
+}
+
+void Monitor::terminaTarea(){
+    pthread_mutex_lock(&lock);
+    ++hebras_listas;
+    while(hebras_listas < N){
+        pthread_cond_wait(&barrera_salida,&lock);
     }
-    pthread_cond_broadcast(&barrera_salida_c);
-    pthread_mutex_unlock(&barrera_salida_m);
-    contador_tareas_term++;
-    if(contador_tareas_term == N){
-        contador_tareas_ejec = 0;
+    if(hebras_anteriores == 0){
+        ++num_etapa;
         cout<<"Etapa "<<num_etapa<<" terminada."<<endl;
-        pthread_cond_broadcast(&barrera_entrada_c);
-        pthread_mutex_unlock(&barrera_entrada_m);
     }
+    ++hebras_anteriores;
+    pthread_cond_signal(&barrera_salida);
+    pthread_mutex_unlock(&lock);
 }

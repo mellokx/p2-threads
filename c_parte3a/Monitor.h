@@ -9,16 +9,16 @@ using namespace std;
 
 class Monitor{
     private:
-        pthread_mutex_t barrera;
-        pthread_mutex_t torniquete;
-        int contador;
+        pthread_cond_t barrera_entrada;
+        pthread_cond_t barrera_salida;
+        pthread_mutex_t lock;
+        int hebras_listas;
+        int hebras_anteriores;
         int num_etapa;
         int N;
-        bool pasoUno;
-        void reiniciarBarrera();
     public:
         Monitor(int N);
         ~Monitor();
-        void tareaTerminada();
-        int getNum();
+        void terminaTarea();
+        void iniciaTarea();
 };
