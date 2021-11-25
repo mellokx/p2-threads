@@ -11,11 +11,11 @@ void * hebra(void * arg){
     struct parametros * p = (struct parametros *) arg;
     int r = 0;
     for(int i = 0; i<p->M; ++i){
-        cout<<"    Hebra "<<p->num_hebra<<" trabajando en tarea #"<<p->tareas_por_etapa[i]<<" ..."<<endl;
+        printf("    Hebra %d trabajando en tarea #%d ...\n",p->num_hebra,p->tareas_por_etapa[i]);
         r =0 ;
         //r = rand()%12+1;
         //sleep(r);
-        cout<<"    Tarea #"<<p->tareas_por_etapa[i]<<" terminada por hebra "<<p->num_hebra<<" en "<<r<<" segundos"<<endl;
+        printf("    Tarea #%d terminada por hebra %d en %d segundos\n",p->tareas_por_etapa[i],p->num_hebra,r);
         p->m->establecerBarrera();
     }
     return (void *)arg;

@@ -21,7 +21,7 @@ void Monitor::establecerBarrera(){
     }else{
         //Caso en que tenemos N hebras listas
         ++num_etapa;
-        cout<<"Etapa "<<num_etapa<<" terminada."<<endl;
+        printf("Etapa %d terminada.\n",num_etapa);
         hebras_listas = 0;
         pthread_cond_broadcast(&barrera);
     }
