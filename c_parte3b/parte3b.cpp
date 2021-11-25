@@ -12,9 +12,8 @@ void * hebra(void * arg){
     int r = 0;
     for(int i = 0; i<p->M; ++i){
         printf("    Hebra %d trabajando en tarea #%d ...\n",p->num_hebra,p->tareas_por_etapa[i]);
-        r =0 ;
-        //r = rand()%12+1;
-        //sleep(r);
+        r = rand()%12+1;
+        sleep(r);
         printf("    Tarea #%d terminada por hebra %d en %d segundos\n",p->tareas_por_etapa[i],p->num_hebra,r);
         p->m->establecerBarrera();
     }
