@@ -11,14 +11,13 @@ void * hebra(void * arg){
     struct parametros * p = (struct parametros *) arg;
     int r = 0;
     for(int i = 0; i<p->M; ++i){
-        p->m->iniciaTarea();
-        r = 0;
-        //r = rand()%3+1;
+        printf("    Hebra %d trabajando en tarea #%d ...\n",p->num_hebra,p->tareas_por_etapa[i]);
+        r =0 ;
+        //r = rand()%13;
         //sleep(r);
         printf("    Tarea #%d terminada por hebra %d en %d segundos\n",p->tareas_por_etapa[i],p->num_hebra,r);
-        p->m->terminaTarea();
+        p->m->establecerBarrera();
     }
-    printf("hebra %d termino\n",p->num_hebra);
     return (void *)arg;
 }
 
@@ -34,6 +33,7 @@ void sincronizacion_con_monitor(int N,int M){
         p[i].m = m;
         p[i].tareas_por_etapa = (int *)malloc(M*sizeof(int));
         aux = i+1;
+        /* Establecemos las tareas que deberá realizar una hebra en cada etapa */
         for(int j = 0; j< M; ++j){
             p[i].tareas_por_etapa[j] = aux;
             aux += N;
@@ -41,6 +41,8 @@ void sincronizacion_con_monitor(int N,int M){
         /* Crea e inicia tareas de las hebras*/
         pthread_create (&vec_hebras[i], NULL, hebra, (void *) &p[i]);
     }
+    /* Esperamos que se hayan completado todas las etapas, antes de finalizar
+       la aplicacion */
     for(int i = 0; i < N; ++i){
         pthread_join(vec_hebras[i],NULL);
     }

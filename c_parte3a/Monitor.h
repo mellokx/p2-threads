@@ -12,7 +12,8 @@ class Monitor{
         pthread_cond_t barrera;
         pthread_mutex_t lock;
         int hebras_listas;
-        int num_etapa;
+        int etapa_actual;
+        bool enEspera;
         int N;
     public:
         Monitor(int N);
