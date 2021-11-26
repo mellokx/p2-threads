@@ -13,8 +13,7 @@ class Monitor{
         pthread_mutex_t lock;
         bool done;
         int hebras_listas;
-        int etapa_actual;
-        int etapa_anterior;
+        int numero_etapa;
         int N;
     public:
         Monitor(int N);
