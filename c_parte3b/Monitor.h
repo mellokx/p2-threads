@@ -11,11 +11,13 @@ class Monitor{
     private:
         pthread_cond_t barrera;
         pthread_mutex_t lock;
+        bool done;
         int hebras_listas;
-        int num_etapa;
+        int etapa_actual;
+        int etapa_anterior;
         int N;
     public:
         Monitor(int N);
         ~Monitor();
-        void establecerBarrera();
+        void establecerBarrera(int num_hebra);
 };
