@@ -76,10 +76,9 @@ int main(){
 
     printf("Se han completado exitosamente todas las etapas\n");
     /* Libera memoria de los parametros ocupados por cada hebra */
-    free(p);
     for(int i = 0; i<N_HEBRAS; ++i){
         free(p[i].tareas_por_etapa);
     }
-
+    free(p);
     return 0;
 }

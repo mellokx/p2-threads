@@ -6,6 +6,8 @@
 
 pthread_barrier_t barrera;
 
+static int hebras_listas;
+
 struct parametros{
     int num_hebra;
     int M;
@@ -17,14 +19,16 @@ void * hebra(void * arg){
     int r = 0;
     for(int i = 0; i<p->M; ++i){
         printf("    Hebra %d trabajando en tarea #%d ...\n",p->num_hebra,p->tareas_por_etapa[i]);
-        r = rand()%13;
+        //r = rand()%13;
         sleep(r);
         printf("    Tarea #%d terminada por hebra %d en %d segundos\n",p->tareas_por_etapa[i],p->num_hebra,r);
+        ++hebras_listas;
         pthread_barrier_wait (&barrera);
     }
 }
 
 void sincronizacion_con_barrier(int N,int M){
+    hebras_listas = 0;
     pthread_t vec_hebras[N];
     /* Creacion de la barrera */
     pthread_barrier_init (&barrera, NULL, N + 1);
@@ -47,14 +51,18 @@ void sincronizacion_con_barrier(int N,int M){
     /* Etapas de ejecución */
     for(int i = 0; i<M; ++i){
         pthread_barrier_wait (&barrera);
+        while(hebras_listas < N);
+        if(hebras_listas == N){
+            hebras_listas = 0;
+        }
         printf("Etapa %d terminada.\n",i+1);
     }
     printf("Se han completado exitosamente todas las etapas\n");
     /* Libera memoria de los parametros ocupados por cada hebra */
-    free(p);
     for(int i = 0; i<N; ++i){
         free(p[i].tareas_por_etapa);
     }
+    free(p);
     pthread_barrier_destroy(&barrera);
 }
 
