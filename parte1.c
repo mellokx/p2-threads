@@ -51,10 +51,6 @@ void sincronizacion_con_barrier(int N,int M){
     /* Etapas de ejecución */
     for(int i = 0; i<M; ++i){
         pthread_barrier_wait (&barrera);
-        while(hebras_listas < N);
-        if(hebras_listas == N){
-            hebras_listas = 0;
-        }
         printf("Etapa %d terminada.\n",i+1);
     }
     printf("Se han completado exitosamente todas las etapas\n");

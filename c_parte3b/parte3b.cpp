@@ -47,10 +47,10 @@ void sincronizacion_con_monitor(int N,int M){
     }
     printf("Se han completado exitosamente todas las etapas\n");
     /* Libera memoria de los parametros ocupados por cada hebra */
-    free(p);
     for(int i = 0; i<N; ++i){
         free(p[i].tareas_por_etapa);
     }
+    free(p);
     delete m;
 }
 
